@@ -33,10 +33,11 @@ class GoogleAdsCampaignDailyMetric extends Model
         ];
     }
 
-    public function campaign(): BelongsTo
-    {
-        return $this->belongsTo(
-            GoogleAdsCampaign::class
-        );
-    }
+    public function campaign()
+{
+    return $this->belongsTo(
+        GoogleAdsCampaign::class,
+        'google_ads_campaign_id'
+    );
+}
 }

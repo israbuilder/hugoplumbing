@@ -424,6 +424,7 @@ GAQL,
             <<<'GAQL'
 SELECT
     local_services_lead.resource_name,
+    local_services_lead.id,
     local_services_lead.lead_type,
     local_services_lead.category_id,
     local_services_lead.service_id,
@@ -431,7 +432,8 @@ SELECT
     local_services_lead.lead_status,
     local_services_lead.creation_date_time,
     local_services_lead.locale,
-    local_services_lead.note,
+    local_services_lead.note.description,
+    local_services_lead.note.edit_date_time,
     local_services_lead.lead_charged,
     local_services_lead.credit_details.credit_state,
     local_services_lead.credit_details.credit_state_last_update_date_time,
@@ -472,7 +474,9 @@ GAQL,
             }
 
             $leadId =
-                basename($resource);
+                isset($remote['id'])
+                    ? (string) $remote['id']
+                    : basename($resource);
 
             $contact =
                 $remote[
@@ -580,6 +584,12 @@ GAQL,
                         'note' =>
                             $note[
                                 'description'
+                            ]
+                            ?? null,
+
+                        'note_updated_at' =>
+                            $note[
+                                'editDateTime'
                             ]
                             ?? null,
 

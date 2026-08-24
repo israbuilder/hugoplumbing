@@ -1969,7 +1969,7 @@
                 @endphp
 
 
-                <x-filament::section>
+                <x-filament::section style="margin-bottom: 20px">
 
                     <div class="flex h-full flex-col gap-5">
 
@@ -2215,7 +2215,7 @@
                 {{-- META ADS --}}
                 {{-- ================================================= --}}
 
-                <x-filament::section>
+                <x-filament::section style="margin-bottom: 20px">
 
                     <div class="flex h-full flex-col gap-5">
 
@@ -2361,7 +2361,7 @@
                 {{-- ORGANIC SOCIAL --}}
                 {{-- ================================================= --}}
 
-                <x-filament::section>
+                <x-filament::section style="margin-bottom: 20px">
 
                     @php
 
