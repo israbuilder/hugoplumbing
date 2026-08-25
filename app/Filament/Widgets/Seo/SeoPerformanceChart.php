@@ -22,87 +22,192 @@ class SeoPerformanceChart extends ChartWidget
 
     protected ?string $pollingInterval =
         null;
+protected function getData(): array
+{
+    $siteId = $this->siteId();
 
-    protected function getData(): array
-    {
-        $siteId = $this->siteId();
-
-        if (!$siteId) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
-
-        $service = app(
-            SeoAnalyticsService::class
-        );
-
-        [
-            $start,
-            $end
-        ] = $service->resolveDates(
-            $this->pageFilters['startDate']
-                ?? null,
-
-            $this->pageFilters['endDate']
-                ?? null
-        );
-
-        $rows =
-            $service->timeline(
-                $siteId,
-                $start,
-                $end
-            );
-
+    if (!$siteId) {
         return [
-            'datasets' => [
-                [
-                    'label' => 'Clicks',
+            'datasets' => [],
+            'labels' => [],
+        ];
+    }
 
-                    'data' =>
-                        $rows
-                            ->pluck('clicks')
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
+    $service = app(
+        SeoAnalyticsService::class
+    );
 
-                    'yAxisID' => 'y',
-                ],
+    [
+        $start,
+        $end
+    ] = $service->resolveDates(
+        $this->pageFilters['startDate'] ?? null,
+        $this->pageFilters['endDate'] ?? null
+    );
 
-                [
-                    'label' =>
-                        'Impressions',
+    $rows = $service->timeline(
+        $siteId,
+        $start,
+        $end
+    );
 
-                    'data' =>
-                        $rows
-                            ->pluck('impressions')
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
+    return [
+        'datasets' => [
 
-                    'yAxisID' => 'y1',
-                ],
-            ],
+            /*
+            |--------------------------------------------------------------------------
+            | Clicks
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Clicks',
 
-            'labels' =>
-                $rows
-                    ->pluck('date')
+                'data' => $rows
+                    ->pluck('clicks')
                     ->map(
-                        fn ($date) =>
-                            $date->format('M j')
+                        fn ($value) => (int) $value
                     )
                     ->values()
                     ->all(),
-        ];
-    }
+
+                'borderColor' => '#2563EB',
+                'backgroundColor' => 'rgba(37, 99, 235, 0.15)',
+
+                'pointBackgroundColor' => '#2563EB',
+                'pointBorderColor' => '#2563EB',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+                'fill' => false,
+
+                'yAxisID' => 'y',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Impressions
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Impressions',
+
+                'data' => $rows
+                    ->pluck('impressions')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#8B5CF6',
+                'backgroundColor' => 'rgba(139, 92, 246, 0.15)',
+
+                'pointBackgroundColor' => '#8B5CF6',
+                'pointBorderColor' => '#8B5CF6',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+                'fill' => false,
+
+                'yAxisID' => 'y1',
+            ],
+        ],
+
+        'labels' => $rows
+            ->pluck('date')
+            ->map(
+                fn ($date) => $date->format('M j')
+            )
+            ->values()
+            ->all(),
+    ];
+}
+    // protected function getData(): array
+    // {
+    //     $siteId = $this->siteId();
+
+    //     if (!$siteId) {
+    //         return [
+    //             'datasets' => [],
+    //             'labels' => [],
+    //         ];
+    //     }
+
+    //     $service = app(
+    //         SeoAnalyticsService::class
+    //     );
+
+    //     [
+    //         $start,
+    //         $end
+    //     ] = $service->resolveDates(
+    //         $this->pageFilters['startDate']
+    //             ?? null,
+
+    //         $this->pageFilters['endDate']
+    //             ?? null
+    //     );
+
+    //     $rows =
+    //         $service->timeline(
+    //             $siteId,
+    //             $start,
+    //             $end
+    //         );
+
+    //     return [
+    //         'datasets' => [
+    //             [
+    //                 'label' => 'Clicks',
+
+    //                 'data' =>
+    //                     $rows
+    //                         ->pluck('clicks')
+    //                         ->map(
+    //                             fn ($value) =>
+    //                                 (int) $value
+    //                         )
+    //                         ->values()
+    //                         ->all(),
+
+    //                 'yAxisID' => 'y',
+    //             ],
+
+    //             [
+    //                 'label' =>
+    //                     'Impressions',
+
+    //                 'data' =>
+    //                     $rows
+    //                         ->pluck('impressions')
+    //                         ->map(
+    //                             fn ($value) =>
+    //                                 (int) $value
+    //                         )
+    //                         ->values()
+    //                         ->all(),
+
+    //                 'yAxisID' => 'y1',
+    //             ],
+    //         ],
+
+    //         'labels' =>
+    //             $rows
+    //                 ->pluck('date')
+    //                 ->map(
+    //                     fn ($date) =>
+    //                         $date->format('M j')
+    //                 )
+    //                 ->values()
+    //                 ->all(),
+    //     ];
+    // }
 
     protected function getType(): string
     {

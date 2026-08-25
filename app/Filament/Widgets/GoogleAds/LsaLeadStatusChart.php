@@ -23,96 +23,95 @@ class LsaLeadStatusChart extends ChartWidget
         null;
 
     protected function getData(): array
-    {
-        $service =
-            app(
-                LsaAnalyticsService::class
-            );
+{
+    $service = app(
+        LsaAnalyticsService::class
+    );
 
-        $customerId =
-            isset(
-                $this->pageFilters[
-                    'customerId'
-                ]
-            )
-                ? (int)
-                    $this->pageFilters[
-                        'customerId'
-                    ]
-                : $service
-                    ->defaultCustomerId();
+    $customerId = isset(
+        $this->pageFilters['customerId']
+    )
+        ? (int) $this->pageFilters['customerId']
+        : $service->defaultCustomerId();
 
-        if (!$customerId) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
+    if (!$customerId) {
+        return [
+            'datasets' => [],
+            'labels' => [],
+        ];
+    }
 
-        [
+    [$start, $end] = $service
+        ->resolveDates(
+            $this->pageFilters['startDate'] ?? null,
+            $this->pageFilters['endDate'] ?? null
+        );
+
+    $rows = $service
+        ->leadStatuses(
+            $customerId,
             $start,
             $end
-        ] =
-            $service
-                ->resolveDates(
-                    $this
-                        ->pageFilters[
-                            'startDate'
-                        ]
-                        ?? null,
+        );
 
-                    $this
-                        ->pageFilters[
-                            'endDate'
-                        ]
-                        ?? null
-                );
+    $colors = [
+    'BOOKED' => '#10B981',             // Green
+    'ACTIVE' => '#F59E0B',             // Amber
+    'DECLINED' => '#EF4444',           // Red
+    'NEW' => '#2563EB',                // Blue
+    'CONSUMER_DECLINED' => '#8B5CF6', // Purple
+];
 
-        $rows =
-            $service
-                ->leadStatuses(
-                    $customerId,
-                    $start,
-                    $end
-                );
+    $backgroundColors = $rows
+        ->pluck('status')
+        ->map(
+            fn ($status) =>
+                $colors[strtoupper($status)] ?? '#64748B'
+        )
+        ->values()
+        ->all();
 
-        return [
-            'datasets' => [
-                [
-                    'label' =>
-                        'Leads',
+    return [
+        'datasets' => [
+            [
+                'label' => 'Leads',
 
-                    'data' =>
-                        $rows
-                            ->pluck('total')
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-                ],
-            ],
-
-            'labels' =>
-                $rows
-                    ->pluck('status')
+                'data' => $rows
+                    ->pluck('total')
                     ->map(
-                        fn ($status) =>
-                            ucwords(
-                                strtolower(
-                                    str_replace(
-                                        '_',
-                                        ' ',
-                                        $status
-                                    )
-                                )
-                            )
+                        fn ($value) => (int) $value
                     )
                     ->values()
                     ->all(),
-        ];
-    }
+
+                'backgroundColor' => $backgroundColors,
+
+                'borderColor' => '#ffffff',
+
+                'borderWidth' => 2,
+
+                'hoverOffset' => 8,
+            ],
+        ],
+
+        'labels' => $rows
+            ->pluck('status')
+            ->map(
+                fn ($status) =>
+                    ucwords(
+                        strtolower(
+                            str_replace(
+                                '_',
+                                ' ',
+                                $status
+                            )
+                        )
+                    )
+            )
+            ->values()
+            ->all(),
+    ];
+}
 
     protected function getType(): string
     {

@@ -22,9 +22,9 @@ class SalespersonResource extends Resource
     protected static ?string $model = Salesperson::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static string|UnitEnum|null  $navigationGroup = 'Ventas';
+    protected static string|UnitEnum|null  $navigationGroup = 'Sales';
 
-    protected static ?string $navigationLabel = 'Vendedores';
+    protected static ?string $navigationLabel = 'Salesmen';
 
     protected static ?string $modelLabel = 'vendedor';
 

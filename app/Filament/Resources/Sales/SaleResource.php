@@ -22,9 +22,9 @@ class SaleResource extends Resource
     protected static ?string $model = Sale::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static string|UnitEnum|null  $navigationGroup = 'Ventas';
+    protected static string|UnitEnum|null  $navigationGroup = 'Sales';
 
-     protected static ?string $navigationLabel = 'Ventas';
+     protected static ?string $navigationLabel = 'Sales';
 
     protected static ?string $modelLabel = 'venta';
 

@@ -22,197 +22,253 @@ class LsaPerformanceChart extends ChartWidget
     protected ?string $pollingInterval =
         null;
 
-    protected function getData(): array
-    {
-        $service =
-            app(
-                LsaAnalyticsService::class
-            );
+   protected function getData(): array
+{
+    $service = app(
+        LsaAnalyticsService::class
+    );
 
-        $customerId =
-            isset(
-                $this->pageFilters[
-                    'customerId'
-                ]
-            )
-                ? (int)
-                    $this->pageFilters[
-                        'customerId'
-                    ]
-                : $service
-                    ->defaultCustomerId();
+    $customerId = isset(
+        $this->pageFilters['customerId']
+    )
+        ? (int) $this->pageFilters['customerId']
+        : $service->defaultCustomerId();
 
-        if (!$customerId) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
-
-        [
-            $start,
-            $end
-        ] =
-            $service
-                ->resolveDates(
-                    $this
-                        ->pageFilters[
-                            'startDate'
-                        ]
-                        ?? null,
-
-                    $this
-                        ->pageFilters[
-                            'endDate'
-                        ]
-                        ?? null
-                );
-
-        $rows =
-            $service
-                ->performanceTimeline(
-                    $customerId,
-                    $start,
-                    $end
-                );
-
+    if (!$customerId) {
         return [
-            'datasets' => [
-
-                [
-                    'label' =>
-                        'Spend',
-
-                    'data' =>
-                        $rows
-                            ->pluck('spend')
-                            ->map(
-                                fn ($value) =>
-                                    round(
-                                        (float) $value,
-                                        2
-                                    )
-                            )
-                            ->values()
-                            ->all(),
-
-                    'yAxisID' =>
-                        'yMoney',
-                ],
-
-                [
-                    'label' =>
-                        'Charged Leads',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'charged_leads'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-
-                    'yAxisID' =>
-                        'yCount',
-                ],
-
-                [
-                    'label' =>
-                        'Phone Calls',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'phone_calls'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-
-                    'yAxisID' =>
-                        'yCount',
-                ],
-
-                [
-                    'label' =>
-                        'Connected Calls',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'connected_phone_calls'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-
-                    'yAxisID' =>
-                        'yCount',
-                ],
-            ],
-
-            'labels' =>
-                $rows
-                    ->pluck('date')
-                    ->map(
-                        fn ($date) =>
-                            $date->format(
-                                'M j'
-                            )
-                    )
-                    ->values()
-                    ->all(),
+            'datasets' => [],
+            'labels' => [],
         ];
     }
 
+    [$start, $end] = $service
+        ->resolveDates(
+            $this->pageFilters['startDate'] ?? null,
+            $this->pageFilters['endDate'] ?? null
+        );
+
+    $rows = $service
+        ->performanceTimeline(
+            $customerId,
+            $start,
+            $end
+        );
+
+    return [
+        'datasets' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Spend
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Spend',
+
+                'data' => $rows
+                    ->pluck('spend')
+                    ->map(
+                        fn ($value) => round(
+                            (float) $value,
+                            2
+                        )
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#EF4444',
+                'backgroundColor' => 'rgba(239, 68, 68, 0.15)',
+
+                'pointBackgroundColor' => '#EF4444',
+                'pointBorderColor' => '#EF4444',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+                'fill' => false,
+
+                'yAxisID' => 'yMoney',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Charged Leads
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Charged Leads',
+
+                'data' => $rows
+                    ->pluck('charged_leads')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#F59E0B',
+                'backgroundColor' => 'rgba(245, 158, 11, 0.15)',
+
+                'pointBackgroundColor' => '#F59E0B',
+                'pointBorderColor' => '#F59E0B',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+                'fill' => false,
+
+                'yAxisID' => 'yCount',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Phone Calls
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Phone Calls',
+
+                'data' => $rows
+                    ->pluck('phone_calls')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#2563EB',
+                'backgroundColor' => 'rgba(37, 99, 235, 0.15)',
+
+                'pointBackgroundColor' => '#2563EB',
+                'pointBorderColor' => '#2563EB',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+                'fill' => false,
+
+                'yAxisID' => 'yCount',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Connected Calls
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Connected Calls',
+
+                'data' => $rows
+                    ->pluck('connected_phone_calls')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#10B981',
+                'backgroundColor' => 'rgba(16, 185, 129, 0.15)',
+
+                'pointBackgroundColor' => '#10B981',
+                'pointBorderColor' => '#10B981',
+
+                'borderWidth' => 3,
+                'pointRadius' => 4,
+                'pointHoverRadius' => 7,
+
+                'tension' => 0.35,
+                'fill' => false,
+
+                'yAxisID' => 'yCount',
+            ],
+        ],
+
+        'labels' => $rows
+            ->pluck('date')
+            ->map(
+                fn ($date) => $date->format('M j')
+            )
+            ->values()
+            ->all(),
+    ];
+}
     protected function getType(): string
     {
         return 'line';
     }
 
     protected function getOptions(): array
-    {
-        return [
-            'responsive' =>
-                true,
+{
+    return [
+        'responsive' => true,
 
-            'maintainAspectRatio' =>
-                false,
+        'maintainAspectRatio' => false,
 
-            'interaction' => [
+        'interaction' => [
+            'mode' => 'index',
+            'intersect' => false,
+        ],
+
+        'plugins' => [
+            'legend' => [
+                'position' => 'bottom',
+
+                'labels' => [
+                    'usePointStyle' => true,
+                    'pointStyle' => 'circle',
+                ],
+            ],
+
+            'tooltip' => [
                 'mode' => 'index',
                 'intersect' => false,
             ],
+        ],
 
-            'scales' => [
+        'scales' => [
 
-                'yMoney' => [
-                    'type' => 'linear',
-                    'position' => 'left',
-                    'beginAtZero' => true,
-                ],
-
-                'yCount' => [
-                    'type' => 'linear',
-                    'position' => 'right',
-                    'beginAtZero' => true,
-
-                    'grid' => [
-                        'drawOnChartArea' =>
-                            false,
-                    ],
+            'x' => [
+                'grid' => [
+                    'display' => false,
                 ],
             ],
-        ];
-    }
+
+            'yMoney' => [
+                'type' => 'linear',
+                'position' => 'left',
+                'beginAtZero' => true,
+
+                'title' => [
+                    'display' => true,
+                    'text' => 'Spend ($)',
+                ],
+            ],
+
+            'yCount' => [
+                'type' => 'linear',
+                'position' => 'right',
+                'beginAtZero' => true,
+
+                'ticks' => [
+                    'precision' => 0,
+                ],
+
+                'title' => [
+                    'display' => true,
+                    'text' => 'Leads / Calls',
+                ],
+
+                'grid' => [
+                    'drawOnChartArea' => false,
+                ],
+            ],
+        ],
+    ];
+}
 }

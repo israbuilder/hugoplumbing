@@ -25,123 +25,148 @@ class OrganicPerformanceChart extends ChartWidget
         null;
 
     protected function getData(): array
-    {
-        $service =
-            app(
-                OrganicPerformanceService::class
-            );
+{
+    $service = app(
+        OrganicPerformanceService::class
+    );
 
-        [
-            $siteId,
-            $propertyId,
-        ] =
-            $this->ids();
+    [
+        $siteId,
+        $propertyId,
+    ] = $this->ids();
 
-        if (
-            !$siteId
-            || !$propertyId
-        ) {
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
-
-        [
-            $start,
-            $end
-        ] =
-            $service
-                ->resolveDates(
-                    $this
-                        ->pageFilters[
-                            'startDate'
-                        ]
-                        ?? null,
-
-                    $this
-                        ->pageFilters[
-                            'endDate'
-                        ]
-                        ?? null
-                );
-
-        $rows =
-            $service
-                ->timeline(
-                    $siteId,
-                    $propertyId,
-                    $start,
-                    $end
-                );
-
+    if (
+        !$siteId
+        || !$propertyId
+    ) {
         return [
-            'datasets' => [
-
-                [
-                    'label' =>
-                        'Search Clicks',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'clicks'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->all(),
-                ],
-
-                [
-                    'label' =>
-                        'Organic Sessions',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'sessions'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->all(),
-                ],
-
-                [
-                    'label' =>
-                        'Key Events',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'key_events'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (float) $value
-                            )
-                            ->all(),
-                ],
-            ],
-
-            'labels' =>
-                $rows
-                    ->pluck('date')
-                    ->map(
-                        fn ($date) =>
-                            \Carbon\Carbon::parse(
-                                $date
-                            )
-                                ->format(
-                                    'M j'
-                                )
-                    )
-                    ->all(),
+            'datasets' => [],
+            'labels' => [],
         ];
     }
+
+    [
+        $start,
+        $end
+    ] = $service
+        ->resolveDates(
+            $this->pageFilters['startDate'] ?? null,
+            $this->pageFilters['endDate'] ?? null
+        );
+
+    $rows = $service
+        ->timeline(
+            $siteId,
+            $propertyId,
+            $start,
+            $end
+        );
+
+    return [
+        'datasets' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Search Clicks
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Search Clicks',
+
+                'data' => $rows
+                    ->pluck('clicks')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#2563EB',
+                'backgroundColor' => 'rgba(37, 99, 235, 0.15)',
+
+                'pointBackgroundColor' => '#2563EB',
+                'pointBorderColor' => '#2563EB',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+                'fill' => false,
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Organic Sessions
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Organic Sessions',
+
+                'data' => $rows
+                    ->pluck('sessions')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#10B981',
+                'backgroundColor' => 'rgba(16, 185, 129, 0.15)',
+
+                'pointBackgroundColor' => '#10B981',
+                'pointBorderColor' => '#10B981',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+                'fill' => false,
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Key Events
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Key Events',
+
+                'data' => $rows
+                    ->pluck('key_events')
+                    ->map(
+                        fn ($value) => (float) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#F59E0B',
+                'backgroundColor' => 'rgba(245, 158, 11, 0.15)',
+
+                'pointBackgroundColor' => '#F59E0B',
+                'pointBorderColor' => '#F59E0B',
+
+                'borderWidth' => 3,
+                'pointRadius' => 4,
+                'pointHoverRadius' => 7,
+
+                'tension' => 0.35,
+                'fill' => false,
+            ],
+        ],
+
+        'labels' => $rows
+            ->pluck('date')
+            ->map(
+                fn ($date) =>
+                    \Carbon\Carbon::parse($date)
+                        ->format('M j')
+            )
+            ->values()
+            ->all(),
+    ];
+}
 
     protected function getType(): string
     {

@@ -15,14 +15,14 @@ use BackedEnum;
 class LocalRankGrid extends Page
 {   
         protected static string|BackedEnum|null $navigationIcon =
-        Heroicon::Map;
+        Heroicon::MapPin;
 
     protected static ?string $navigationLabel = 'Local Rank Grid';
 
     protected static ?string $title = 'Local Rank Grid';
 
     protected static string|UnitEnum|null $navigationGroup =
-        'Local SEO';
+        'Marketing';
 
     protected static ?int $navigationSort = 10;
 

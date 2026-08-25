@@ -175,6 +175,8 @@ class SearchConsoleAuthService
             $account = IntegrationAccount::create([
                 'integration_id' => $integration->id,
 
+                'external_account_id' => 'google_search_console',
+
                 'name' => 'Google Search Console',
 
                 'status' => 'connected',

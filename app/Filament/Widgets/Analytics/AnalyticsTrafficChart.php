@@ -23,120 +23,141 @@ class AnalyticsTrafficChart extends ChartWidget
         null;
 
     protected function getData(): array
-    {
-        $service =
-            app(
-                GoogleAnalyticsService::class
-            );
+{
+    $service = app(
+        GoogleAnalyticsService::class
+    );
 
-        $propertyId =
-            $this->propertyId(
-                $service
-            );
+    $propertyId = $this->propertyId(
+        $service
+    );
 
-        if (!$propertyId) {
+    if (!$propertyId) {
+        return [
+            'datasets' => [],
+            'labels' => [],
+        ];
+    }
 
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
+    [$start, $end] = $service
+        ->resolveDates(
+            $this->pageFilters['startDate'] ?? null,
+            $this->pageFilters['endDate'] ?? null
+        );
 
-        [
+    $rows = $service
+        ->timeline(
+            $propertyId,
             $start,
             $end
-        ] =
-            $service
-                ->resolveDates(
-                    $this
-                        ->pageFilters[
-                            'startDate'
-                        ]
-                        ?? null,
+        );
 
-                    $this
-                        ->pageFilters[
-                            'endDate'
-                        ]
-                        ?? null
-                );
+    return [
+        'datasets' => [
 
-        $rows =
-            $service
-                ->timeline(
-                    $propertyId,
-                    $start,
-                    $end
-                );
+            /*
+            |--------------------------------------------------------------------------
+            | Sessions
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Sessions',
 
-        return [
-            'datasets' => [
-
-                [
-                    'label' =>
-                        'Sessions',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'sessions'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-                ],
-
-                [
-                    'label' =>
-                        'Users',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'active_users'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-                ],
-
-                [
-                    'label' =>
-                        'New Users',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'new_users'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-                ],
-            ],
-
-            'labels' =>
-                $rows
-                    ->pluck('date')
+                'data' => $rows
+                    ->pluck('sessions')
                     ->map(
-                        fn ($date) =>
-                            $date->format(
-                                'M j'
-                            )
+                        fn ($value) => (int) $value
                     )
                     ->values()
                     ->all(),
-        ];
-    }
+
+                'borderColor' => '#2563EB',
+                'backgroundColor' => 'rgba(37, 99, 235, 0.15)',
+
+                'pointBackgroundColor' => '#2563EB',
+                'pointBorderColor' => '#2563EB',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+
+                'fill' => false,
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Users
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'Users',
+
+                'data' => $rows
+                    ->pluck('active_users')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#10B981',
+                'backgroundColor' => 'rgba(16, 185, 129, 0.15)',
+
+                'pointBackgroundColor' => '#10B981',
+                'pointBorderColor' => '#10B981',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+
+                'fill' => false,
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | New Users
+            |--------------------------------------------------------------------------
+            */
+            [
+                'label' => 'New Users',
+
+                'data' => $rows
+                    ->pluck('new_users')
+                    ->map(
+                        fn ($value) => (int) $value
+                    )
+                    ->values()
+                    ->all(),
+
+                'borderColor' => '#F59E0B',
+                'backgroundColor' => 'rgba(245, 158, 11, 0.15)',
+
+                'pointBackgroundColor' => '#F59E0B',
+                'pointBorderColor' => '#F59E0B',
+
+                'borderWidth' => 2,
+                'pointRadius' => 3,
+                'pointHoverRadius' => 6,
+
+                'tension' => 0.35,
+
+                'fill' => false,
+            ],
+        ],
+
+        'labels' => $rows
+            ->pluck('date')
+            ->map(
+                fn ($date) => $date->format('M j')
+            )
+            ->values()
+            ->all(),
+    ];
+}
 
     protected function getType(): string
     {

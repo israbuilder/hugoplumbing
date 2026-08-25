@@ -22,9 +22,9 @@ class SalesTeamResource extends Resource
     protected static ?string $model = SalesTeam::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static string|UnitEnum|null  $navigationGroup = 'Ventas';
+    protected static string|UnitEnum|null  $navigationGroup = 'Sales';
 
-      protected static ?string $navigationLabel = 'Equipos';
+      protected static ?string $navigationLabel = 'Sales Team';
 
     protected static ?string $modelLabel = 'equipo';
 

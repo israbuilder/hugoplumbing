@@ -22,91 +22,89 @@ class AnalyticsChannelChart extends ChartWidget
     protected ?string $pollingInterval =
         null;
 
-    protected function getData(): array
-    {
-        $service =
-            app(
-                GoogleAnalyticsService::class
-            );
+   protected function getData(): array
+{
+    $service = app(GoogleAnalyticsService::class);
 
-        $propertyId =
-            $this->propertyId(
-                $service
-            );
+    $propertyId = $this->propertyId($service);
 
-        if (!$propertyId) {
-
-            return [
-                'datasets' => [],
-                'labels' => [],
-            ];
-        }
-
-        [
-            $start,
-            $end
-        ] =
-            $service
-                ->resolveDates(
-                    $this
-                        ->pageFilters[
-                            'startDate'
-                        ]
-                        ?? null,
-
-                    $this
-                        ->pageFilters[
-                            'endDate'
-                        ]
-                        ?? null
-                );
-
-        $channel =
-            $this->pageFilters[
-                'channel'
-            ]
-            ?? null;
-
-        $rows =
-            $service
-                ->channels(
-                    $propertyId,
-                    $start,
-                    $end,
-                    $channel
-                );
-
+    if (!$propertyId) {
         return [
-
-            'datasets' => [
-
-                [
-                    'label' =>
-                        'Sessions',
-
-                    'data' =>
-                        $rows
-                            ->pluck(
-                                'sessions'
-                            )
-                            ->map(
-                                fn ($value) =>
-                                    (int) $value
-                            )
-                            ->values()
-                            ->all(),
-                ],
-            ],
-
-            'labels' =>
-                $rows
-                    ->pluck(
-                        'channel'
-                    )
-                    ->values()
-                    ->all(),
+            'datasets' => [],
+            'labels' => [],
         ];
     }
+
+    [$start, $end] = $service->resolveDates(
+        $this->pageFilters['startDate'] ?? null,
+        $this->pageFilters['endDate'] ?? null
+    );
+
+    $channel = $this->pageFilters['channel'] ?? null;
+
+    $rows = $service->channels(
+        $propertyId,
+        $start,
+        $end,
+        $channel
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | GA4 Channel Colors
+    |--------------------------------------------------------------------------
+    */
+
+    $colors = [
+        'Organic Search' => '#10B981',
+        'Paid Search' => '#2563EB',
+        'Direct' => '#F59E0B',
+        'Referral' => '#8B5CF6',
+        'Organic Social' => '#EC4899',
+        'Paid Social' => '#06B6D4',
+        'Email' => '#F97316',
+        'Display' => '#6366F1',
+        'Organic Video' => '#EF4444',
+        'Cross-network' => '#14B8A6',
+        'Unassigned' => '#9CA3AF',
+    ];
+
+    $backgroundColors = $rows
+        ->pluck('channel')
+        ->map(
+            fn ($channel) =>
+                $colors[$channel] ?? '#64748B'
+        )
+        ->values()
+        ->all();
+
+    return [
+        'datasets' => [
+            [
+                'label' => 'Sessions',
+
+                'data' => $rows
+                    ->pluck('sessions')
+                    ->map(fn ($value) => (int) $value)
+                    ->values()
+                    ->all(),
+
+                'backgroundColor' => $backgroundColors,
+
+                'borderColor' => '#ffffff',
+
+                'borderWidth' => 2,
+
+                'hoverOffset' => 8,
+            ],
+        ],
+
+        'labels' => $rows
+            ->pluck('channel')
+            ->values()
+            ->all(),
+    ];
+}
 
     protected function getType(): string
     {

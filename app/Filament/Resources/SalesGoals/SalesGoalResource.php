@@ -22,7 +22,7 @@ class SalesGoalResource extends Resource
     protected static ?string $model = SalesGoal::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-    protected static string|UnitEnum|null  $navigationGroup = 'Ventas';
+    protected static string|UnitEnum|null  $navigationGroup = 'Sales';
 
      protected static ?string $navigationLabel = 'Metas';
 
