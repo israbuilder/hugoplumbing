@@ -110,7 +110,7 @@ class MetaController extends Controller
             );
 
             return redirect()
-                ->route('filament.admin.pages.integrations')
+                ->route('filament.cms.pages.integrations')
                 ->with(
                     'success',
                     'Meta connected successfully.'
@@ -121,7 +121,7 @@ class MetaController extends Controller
             report($e);
 
             return redirect()
-                ->route('filament.admin.pages.integrations')
+                ->route('filament.cms.pages.integrations')
                 ->with(
                     'error',
                     $e->getMessage()
