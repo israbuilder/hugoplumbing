@@ -69,7 +69,7 @@ class MetaController extends Controller
             $integration =
                 Integration::where(
                     'provider',
-                    'meta'
+                    'facebook'
                 )->firstOrFail();
 
             MetaConnection::updateOrCreate(
@@ -96,7 +96,7 @@ class MetaController extends Controller
 
                     'scopes' =>
                         config(
-                            'services.meta.scopes'
+                            'services.meta.scope'
                         ),
 
                     'is_active' => true,
