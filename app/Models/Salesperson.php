@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\SalespersonStatus;
+use App\Enums\SalesPersonStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -43,7 +43,7 @@ class Salesperson extends Model
     protected function casts(): array
     {
         return [
-            'status' => SalespersonStatus::class,
+            'status' => SalesPersonStatus::class,
             'show_on_dashboard' => 'boolean',
             'sort_order' => 'integer',
             'hire_date' => 'date',
@@ -129,7 +129,7 @@ class Salesperson extends Model
     {
         return $query->where(
             'status',
-            SalespersonStatus::Active->value
+            SalesPersonStatus::Active->value
         );
     }
 

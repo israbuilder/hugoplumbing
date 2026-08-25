@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Salespeople\Tables;
 
-use App\Enums\SalespersonStatus;
+use App\Enums\SalesPersonStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -53,12 +53,12 @@ class SalespeopleTable
                     ->badge()
                     ->formatStateUsing(
                         fn ($state): string =>
-                            $state instanceof SalespersonStatus
+                            $state instanceof SalesPersonStatus
                                 ? $state->label()
                                 : ucfirst((string) $state)
                     )
                     ->color(fn ($state): string => match (
-                        $state instanceof SalespersonStatus
+                        $state instanceof SalesPersonStatus
                             ? $state->value
                             : $state
                     ) {

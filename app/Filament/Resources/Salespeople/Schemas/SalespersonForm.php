@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Salespeople\Schemas;
 
-use App\Enums\SalespersonStatus;
+use App\Enums\SalesPersonStatus;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -65,11 +65,11 @@ class SalespersonForm
                         Select::make('status')
                             ->label('Estado')
                             ->options([
-                                SalespersonStatus::Active->value => 'Activo',
-                                SalespersonStatus::Inactive->value => 'Inactivo',
-                                SalespersonStatus::Suspended->value => 'Suspendido',
+                                SalesPersonStatus::Active->value => 'Activo',
+                                SalesPersonStatus::Inactive->value => 'Inactivo',
+                                SalesPersonStatus::Suspended->value => 'Suspendido',
                             ])
-                            ->default(SalespersonStatus::Active->value)
+                            ->default(SalesPersonStatus::Active->value)
                             ->required(),
 
                         TextInput::make('hire_date')
