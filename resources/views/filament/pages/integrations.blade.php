@@ -1961,7 +1961,7 @@
                 {{-- ================================================= --}}
 
                 @php
-                    $metaIntegration =\App\Models\Integration::query()->where('provider', 'meta')->first();
+                    $metaIntegration =\App\Models\Integration::query()->where('provider', 'facebook')->first();
                     $metaConnection = \App\Models\MetaConnection::query()->where('is_active', true)->latest()->first();
                     $metaConnected = $metaConnection !== null;
                     $metaAdAccounts =  $metaConnection ? $metaConnection->adAccounts()->count() : 0;
