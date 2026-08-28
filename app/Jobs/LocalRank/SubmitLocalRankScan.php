@@ -101,18 +101,32 @@ class SubmitLocalRankScan implements ShouldQueue
                     continue;
                 }
 
-                $taskId = $task['id'] ?? null;
+               $taskStatusCode = (int) ($task['status_code'] ?? 0);
+$taskStatusMessage = $task['status_message'] ?? 'Unknown DataForSEO error';
 
-                if (!$taskId) {
-                    $point->update([
-                        'status' => 'failed',
-                        'error_message' =>
-                            $task['status_message']
-                            ?? 'DataForSEO did not return task ID.',
-                    ]);
+if ($taskStatusCode !== 20100) {
 
-                    continue;
-                }
+    $point->update([
+        'status' => 'failed',
+        'error_message' =>
+            "DataForSEO {$taskStatusCode}: {$taskStatusMessage}",
+    ]);
+
+    continue;
+}
+
+$taskId = $task['id'] ?? null;
+
+if (!$taskId) {
+
+    $point->update([
+        'status' => 'failed',
+        'error_message' =>
+            'DataForSEO created no task ID.',
+    ]);
+
+    continue;
+}
 
                 $point->update([
                     'provider_task_id' => $taskId,

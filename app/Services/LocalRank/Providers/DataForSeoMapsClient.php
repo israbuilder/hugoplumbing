@@ -70,19 +70,62 @@ class DataForSeoMapsClient
         return $json;
     }
 
-    public function getTask(string $taskId): array
-    {
-        $response = $this->http->get(
-            "/v3/serp/google/maps/task_get/advanced/{$taskId}"
-        );
-
-        if ($response->failed()) {
-            throw new RuntimeException(
-                'DataForSEO task_get failed: ' .
-                $response->body()
+        public function getTask(string $taskId): array
+        {
+            $response = $this->http->get(
+                "/v3/serp/google/maps/task_get/advanced/{$taskId}"
             );
-        }
 
-        return $response->json();
-    }
+            if ($response->failed()) {
+                throw new RuntimeException(
+                    'DataForSEO task_get HTTP failed: ' .
+                    $response->body()
+                );
+            }
+
+            $json = $response->json();
+
+            $statusCode = (int) ($json['status_code'] ?? 0);
+
+            if ($statusCode !== 20000) {
+                throw new RuntimeException(
+                    'DataForSEO task_get API error ' .
+                    $statusCode . ': ' .
+                    ($json['status_message'] ?? 'Unknown error')
+                );
+            }
+
+            $task = $json['tasks'][0] ?? null;
+
+            if (!$task) {
+                return $json;
+            }
+
+            $taskStatus = (int) ($task['status_code'] ?? 0);
+
+            /*
+            * 40102 = DataForSEO completed the request,
+            * but Google returned no search results.
+            *
+            * This is NOT a system failure for our GeoGrid.
+            */
+            if ($taskStatus === 40102) {
+                $json['_local_rank_no_results'] = true;
+
+                return $json;
+            }
+
+            /*
+            * Other 40000+ statuses are actual errors.
+            */
+            if ($taskStatus >= 40000) {
+                throw new RuntimeException(
+                    'DataForSEO task error ' .
+                    $taskStatus . ': ' .
+                    ($task['status_message'] ?? 'Unknown task error')
+                );
+            }
+
+            return $json;
+        }
 }

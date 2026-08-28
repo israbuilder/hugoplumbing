@@ -35,6 +35,7 @@ class CmsPanelProvider extends PanelProvider
             ])
              ->navigationGroups([
             'Marketing',
+            'Local SEO',
             'Blog',
             'Dashboard',
             'Sales',

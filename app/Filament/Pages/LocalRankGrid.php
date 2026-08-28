@@ -22,9 +22,9 @@ class LocalRankGrid extends Page
     protected static ?string $title = 'Local Rank Grid';
 
     protected static string|UnitEnum|null $navigationGroup =
-        'Marketing';
+        'Local SEO';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 9;
 
     protected string $view =
         'filament.pages.local-rank-grid';
@@ -35,7 +35,13 @@ class LocalRankGrid extends Page
 
     public ?int $scanId = null;
 
+    public ?int $compareScanId = null;
+
+    public array $comparisonData = [];
+
     public int $gridSize = 5;
+
+    public array $competitors = [];
 
     public float $radiusMiles = 5;
 
@@ -84,6 +90,155 @@ class LocalRankGrid extends Page
 
         $this->loadMap();
     }
+
+    public function updatedCompareScanId(): void
+{
+    $this->loadComparison();
+}
+
+public function loadComparison(): void
+{
+    $this->comparisonData = [];
+
+    if (
+        !$this->scanId ||
+        !$this->compareScanId
+    ) {
+        return;
+    }
+
+    if (
+        $this->scanId ===
+        $this->compareScanId
+    ) {
+        return;
+    }
+
+    $current = LocalRankScan::with([
+        'points.result',
+    ])->find(
+        $this->scanId
+    );
+
+    $previous = LocalRankScan::with([
+        'points.result',
+    ])->find(
+        $this->compareScanId
+    );
+
+    if (
+        !$current ||
+        !$previous
+    ) {
+        return;
+    }
+
+    $previousPoints =
+        $previous->points
+            ->keyBy(
+                fn ($point) =>
+                    $point->row .
+                    ':' .
+                    $point->column
+            );
+
+    $points = [];
+
+    foreach ($current->points as $point) {
+
+        $key =
+            $point->row .
+            ':' .
+            $point->column;
+
+        $previousPoint =
+            $previousPoints->get($key);
+
+        $currentRank =
+            $point->result?->rank;
+
+        $previousRank =
+            $previousPoint?->result?->rank;
+
+        $change = null;
+
+        if (
+            $currentRank !== null &&
+            $previousRank !== null
+        ) {
+            /*
+             * Lower rank is better.
+             *
+             * previous #8 -> current #3
+             * improvement = +5
+             */
+            $change =
+                $previousRank -
+                $currentRank;
+        }
+
+        $points[$key] = [
+            'current_rank' =>
+                $currentRank,
+
+            'previous_rank' =>
+                $previousRank,
+
+            'change' =>
+                $change,
+
+            'current_found' =>
+                $point->result?->found
+                ?? false,
+
+            'previous_found' =>
+                $previousPoint?->result?->found
+                ?? false,
+        ];
+    }
+
+    $this->comparisonData = [
+        'current' => [
+            'id' => $current->id,
+
+            'average_rank' =>
+                $current->average_rank,
+
+            'coverage' =>
+                $current->coverage_percentage,
+
+            'top_3' =>
+                $current->top_3_percentage,
+
+            'top_10' =>
+                $current->top_10_percentage,
+
+            'visibility' =>
+                $current->visibility_score,
+        ],
+
+        'previous' => [
+            'id' => $previous->id,
+
+            'average_rank' =>
+                $previous->average_rank,
+
+            'coverage' =>
+                $previous->coverage_percentage,
+
+            'top_3' =>
+                $previous->top_3_percentage,
+
+            'top_10' =>
+                $previous->top_10_percentage,
+
+            'visibility' =>
+                $previous->visibility_score,
+        ],
+
+        'points' => $points,
+    ];
+}
 
     public function updatedLocationId(): void
     {
@@ -237,6 +392,11 @@ class LocalRankGrid extends Page
             return;
         }
 
+        $this->competitors =
+    app(
+        \App\Services\LocalRank\CompetitorAnalysisService::class
+    )->analyze($scan);
+
         $this->mapData = [
             'scan' => [
                 'id' => $scan->id,
@@ -371,6 +531,7 @@ class LocalRankGrid extends Page
         ];
 
         $this->dispatchMap();
+        $this->loadComparison();
     }
 
     protected function dispatchMap(): void

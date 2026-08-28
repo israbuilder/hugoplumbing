@@ -2,7 +2,7 @@
 
 namespace App\Services\LocalRank;
 
-use App\Models\LocalRank\LocalRankScan;
+use App\Models\LocalRankScan;
 
 class LocalRankMetricsService
 {
@@ -43,16 +43,25 @@ class LocalRankMetricsService
         $maxTracked =
             config('local-rank.max_tracked_rank', 100);
 
-        $averageValues = $results->map(
-            fn ($result) =>
-                $result->found && $result->rank
-                    ? $result->rank
-                    : ($maxTracked + 1)
+            $foundResults = $results->filter(fn ($result) =>
+                $result->found &&
+                $result->rank !== null
         );
 
-        $averageRank = $averageValues->isNotEmpty()
-            ? round($averageValues->avg(), 2)
-            : null;
+                $averageRank = $foundResults->isNotEmpty()
+                    ? round(
+                        $foundResults->avg('rank'),
+                        2
+                    )
+                    : null;
+
+                    $coveragePercentage = round(
+            (
+                $foundResults->count()
+                / $totalPoints
+            ) * 100,
+            2
+        );
 
         $top3Count = $ranks->filter(
             fn ($rank) => $rank <= 3
@@ -104,6 +113,7 @@ class LocalRankMetricsService
             'failed_points' => $failed->count(),
 
             'average_rank' => $averageRank,
+            'coverage_percentage' => $coveragePercentage,
             'top_3_percentage' => $top3Percentage,
             'top_10_percentage' => $top10Percentage,
             'visibility_score' => $visibilityScore,

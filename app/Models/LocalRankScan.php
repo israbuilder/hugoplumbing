@@ -31,7 +31,7 @@ class LocalRankScan extends Model
 
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
-
+        'coverage_percentage' => 'float',
         'meta' => 'array',
     ];
 

@@ -50,6 +50,64 @@ class FetchLocalRankPointResult implements ShouldQueue
             $point->provider_task_id
         );
 
+        /*
+|--------------------------------------------------------------------------
+| No SERP results
+|--------------------------------------------------------------------------
+|
+| DataForSEO 40102 means Google returned no Maps results for this
+| coordinate/keyword. This is a valid GeoGrid outcome, not a failed job.
+|
+*/
+
+if ($response['_local_rank_no_results'] ?? false) {
+
+    LocalRankResult::updateOrCreate(
+        [
+            'local_rank_grid_point_id' => $point->id,
+        ],
+        [
+            'local_rank_scan_id' =>
+                $point->local_rank_scan_id,
+
+            'found' => false,
+
+            'rank' => null,
+
+            'business_name' => null,
+
+            'place_id' => null,
+
+            'cid' => null,
+
+            'category' => null,
+
+            'rating' => null,
+
+            'reviews_count' => null,
+
+            'address' => null,
+
+            'items' => [],
+
+            'raw_response' => $response,
+        ]
+    );
+
+    $point->update([
+        'status' => 'completed',
+
+        'error_message' =>
+            'No Google Maps results returned for this point.',
+    ]);
+
+    $metrics->refreshScan(
+        $point->local_rank_scan_id
+    );
+
+    return;
+}
+
         $task = $response['tasks'][0] ?? null;
 
         if (!$task) {
@@ -128,7 +186,7 @@ class FetchLocalRankPointResult implements ShouldQueue
                 'local_rank_grid_point_id' => $point->id,
             ],
             [
-                'local_rank_scan_id' => $point->scan_id,
+                'local_rank_scan_id' => $point->local_rank_scan_id,
 
                 'found' => $ourBusiness !== null,
 

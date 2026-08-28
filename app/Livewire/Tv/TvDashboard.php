@@ -57,6 +57,108 @@ class TvDashboard extends Component
         $this->dispatch('tv-dashboard-updated');
     }
 
+    private function expandSlide(array $slide): array
+{
+    /*
+     * Solamente dividimos slides que muestran vendedores.
+     *
+     * Puedes agregar/quitar tipos aquí dependiendo
+     * de cuáles quieras paginar.
+     */
+    $splittableTypes = [
+        DashboardSlideType::Race->value,
+        DashboardSlideType::Leaderboard->value,
+    ];
+
+    if (! in_array($slide['type'], $splittableTypes, true)) {
+        return [$slide];
+    }
+
+    $leaderboard = collect(
+        $slide['leaderboard'] ?? []
+    );
+
+    if ($leaderboard->isEmpty()) {
+        return [$slide];
+    }
+
+    /*
+     * Máximo de vendedores por pantalla.
+     *
+     * Puedes permitir sobrescribirlo desde settings:
+     *
+     * {
+     *     "vendors_per_slide": 3
+     * }
+     */
+    $perSlide = max(
+        1,
+        (int) (
+            $slide['settings']['vendors_per_slide']
+            ?? 3
+        )
+    );
+
+    /*
+     * Si solamente hay 3 o menos,
+     * dejamos el slide como estaba.
+     */
+    if ($leaderboard->count() <= $perSlide) {
+        return [$slide];
+    }
+
+    $chunks = $leaderboard
+        ->chunk($perSlide)
+        ->values();
+
+    $totalPages = $chunks->count();
+
+    return $chunks
+        ->map(function (
+            Collection $chunk,
+            int $page
+        ) use (
+            $slide,
+            $totalPages
+        ): array {
+
+            return [
+                ...$slide,
+
+                /*
+                 * Es MUY importante que cada slide tenga
+                 * un ID diferente para Livewire.
+                 */
+                'id' => $slide['id']
+                    . '-page-'
+                    . ($page + 1),
+
+                'leaderboard' => $chunk
+                    ->values()
+                    ->all(),
+
+                'page' => $page + 1,
+
+                'pages' => $totalPages,
+
+                /*
+                 * Opcional:
+                 * agregar indicador al subtítulo.
+                 */
+                'subtitle' => $totalPages > 1
+                    ? trim(
+                        ($slide['subtitle'] ?? '')
+                        . ' • '
+                        . ($page + 1)
+                        . '/'
+                        . $totalPages
+                    )
+                    : ($slide['subtitle'] ?? null),
+            ];
+        })
+        ->all();
+}
+
     private function loadDashboard(): void
     {
         $dashboardSlides = DashboardSlide::query()
@@ -70,11 +172,13 @@ class TvDashboard extends Component
             ->orderBy('sort_order')
             ->get();
 
-        $this->slides = $dashboardSlides
-            ->map(
-                fn (DashboardSlide $slide): array =>
-                    $this->buildSlide($slide)
-            )
+       $this->slides = $dashboardSlides
+            ->flatMap(function (DashboardSlide $slide): array {
+
+                $builtSlide = $this->buildSlide($slide);
+
+                return $this->expandSlide($builtSlide);
+            })
             ->values()
             ->all();
 

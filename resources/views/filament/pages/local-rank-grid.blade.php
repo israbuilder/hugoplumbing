@@ -302,6 +302,44 @@
             <div class="lrg-field">
                 <label>Scan History</label>
 
+                <div class="lrg-field">
+
+                    <label>
+                        Compare With
+                    </label>
+
+                    <select
+                        wire:model.live="compareScanId"
+                    >
+
+                        <option value="">
+                            No comparison
+                        </option>
+
+                        @foreach($this->scans as $scan)
+
+                            @if(
+                                (int) $scan->id !==
+                                (int) $scanId
+                            )
+
+                                <option
+                                    value="{{ $scan->id }}"
+                                >
+                                    #{{ $scan->id }}
+                                    —
+                                    {{ $scan->created_at->format(
+                                        'M j, Y g:i A'
+                                    ) }}
+                                </option>
+
+                            @endif
+
+                        @endforeach
+
+                    </select>
+
+                </div>
                 <select wire:model.live="scanId">
                     @foreach($this->scans as $scan)
                         <option value="{{ $scan->id }}">
@@ -320,7 +358,7 @@
                     wire:loading.attr="disabled"
                     class="lrg-button lrg-button-primary"
                 >
-                    Run GeoGrid
+                    Run
                 </button>
 
                 <button
@@ -419,6 +457,154 @@
                 </div>
 
             </div>
+
+            @if(
+    !empty($comparisonData['current']) &&
+    !empty($comparisonData['previous'])
+)
+
+    @php
+
+        $current =
+            $comparisonData['current'];
+
+        $previous =
+            $comparisonData['previous'];
+
+    @endphp
+
+    <div class="lrg-comparison">
+
+        <h3>
+            Scan Comparison
+        </h3>
+
+        <table
+            style="
+                width:100%;
+                background:white;
+                border-radius:12px;
+                overflow:hidden;
+            "
+        >
+
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Previous</th>
+                    <th>Current</th>
+                    <th>Change</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Map Coverage
+                    </td>
+
+                    <td>
+                        {{ number_format(
+                            $previous['coverage'] ?? 0,
+                            1
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{ number_format(
+                            $current['coverage'] ?? 0,
+                            1
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{
+                            number_format(
+                                ($current['coverage'] ?? 0)
+                                -
+                                ($previous['coverage'] ?? 0),
+                                1
+                            )
+                        }}%
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Top 3
+                    </td>
+
+                    <td>
+                        {{ number_format(
+                            $previous['top_3'] ?? 0,
+                            1
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{ number_format(
+                            $current['top_3'] ?? 0,
+                            1
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{
+                            number_format(
+                                ($current['top_3'] ?? 0)
+                                -
+                                ($previous['top_3'] ?? 0),
+                                1
+                            )
+                        }}%
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Top 10
+                    </td>
+
+                    <td>
+                        {{ number_format(
+                            $previous['top_10'] ?? 0,
+                            1
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{ number_format(
+                            $current['top_10'] ?? 0,
+                            1
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{
+                            number_format(
+                                ($current['top_10'] ?? 0)
+                                -
+                                ($previous['top_10'] ?? 0),
+                                1
+                            )
+                        }}%
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+@endif
         @endif
 
         {{-- Map --}}
@@ -428,6 +614,204 @@
                 wire:ignore
             ></div>
         </div>
+
+        @if(count($competitors))
+
+    <div
+        style="
+            background:white;
+            border:1px solid #e5e7eb;
+            border-radius:16px;
+            padding:20px;
+        "
+    >
+
+        <h2
+            style="
+                font-size:20px;
+                font-weight:800;
+                margin-bottom:16px;
+            "
+        >
+            Top Local Competitors
+        </h2>
+
+        <div
+            style="
+                overflow-x:auto;
+            "
+        >
+
+            <table
+                style="
+                    width:100%;
+                    border-collapse:collapse;
+                "
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th
+                            style="
+                                text-align:left;
+                                padding:10px;
+                            "
+                        >
+                            Competitor
+                        </th>
+
+                        <th>
+                            Appearances
+                        </th>
+
+                        <th>
+                            Avg Rank
+                        </th>
+
+                        <th>
+                            Best
+                        </th>
+
+                        <th>
+                            Above Us
+                        </th>
+
+                        <th>
+                            Rating
+                        </th>
+
+                        <th>
+                            Reviews
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach(
+                        array_slice(
+                            $competitors,
+                            0,
+                            20
+                        )
+                        as $competitor
+                    )
+
+                        <tr
+                            style="
+                                border-top:
+                                    1px solid #e5e7eb;
+                            "
+                        >
+
+                            <td
+                                style="
+                                    padding:10px;
+                                    font-weight:700;
+                                "
+                            >
+                                {{
+                                    $competitor['name']
+                                }}
+                            </td>
+
+                            <td
+                                style="
+                                    text-align:center;
+                                "
+                            >
+                                {{
+                                    $competitor[
+                                        'appearances'
+                                    ]
+                                }}
+                            </td>
+
+                            <td
+                                style="
+                                    text-align:center;
+                                "
+                            >
+                                {{
+                                    $competitor[
+                                        'average_rank'
+                                    ]
+                                    ?? '—'
+                                }}
+                            </td>
+
+                            <td
+                                style="
+                                    text-align:center;
+                                "
+                            >
+                                #{{
+
+                                    $competitor[
+                                        'best_rank'
+                                    ]
+                                    ?? '—'
+
+                                }}
+                            </td>
+
+                            <td
+                                style="
+                                    text-align:center;
+                                "
+                            >
+                                {{
+                                    $competitor[
+                                        'above_us'
+                                    ]
+                                }}
+                            </td>
+
+                            <td
+                                style="
+                                    text-align:center;
+                                "
+                            >
+                                {{
+                                    $competitor[
+                                        'rating'
+                                    ]
+                                    ?? '—'
+                                }}
+                            </td>
+
+                            <td
+                                style="
+                                    text-align:center;
+                                "
+                            >
+                                {{
+                                    number_format(
+                                        $competitor[
+                                            'reviews'
+                                        ]
+                                        ?? 0
+                                    )
+                                }}
+                            </td>
+
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+@endif
 
     </div>
 
