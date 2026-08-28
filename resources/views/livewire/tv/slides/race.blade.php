@@ -5,6 +5,10 @@
 
     $isRevenue = ($goal['type'] ?? null) === 'revenue';
 
+    $goalStarts = $goal['starts_at'];
+
+    $goalEnds = $goal['ends_at'];
+
     $currency = $goal['currency'] ?? 'USD';
 
     /*
@@ -75,7 +79,7 @@
             </div>
 
             <h1 class="race-title">
-                {{ $slide['title'] }}
+                {{ $slide['title'] }} {{$goalStarts}} to {{$goalEnds}}
             </h1>
 
             @if($slide['subtitle'])
@@ -83,6 +87,8 @@
                     {{ $slide['subtitle'] }}
                 </p>
             @endif
+
+           
 
         </div>
 
