@@ -1,6 +1,7 @@
 <div
     x-data="tvDashboard"
-    wire:poll.{{ max(2, $dashboard->refresh_interval) }}s="refreshDashboard"
+    wire:poll.60s="refreshDashboard"
+    {{-- wire:poll.{{ max(2, $dashboard->refresh_interval) }}s="refreshDashboard" --}}
     class="tv-background relative h-screen w-screen overflow-hidden"
 >
     {{-- ============================================================
