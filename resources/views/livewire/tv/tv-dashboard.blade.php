@@ -225,12 +225,14 @@
                 </span>
             </button>
 
-            <button
+           <button
                 type="button"
                 x-on:click="toggleAutoplay"
                 class="tv-control-button tv-control-button-primary"
             >
-                Pausar
+                <span
+                    x-text="isPaused ? 'Reanudar' : 'Pausar'"
+                ></span>
             </button>
 
             <button
