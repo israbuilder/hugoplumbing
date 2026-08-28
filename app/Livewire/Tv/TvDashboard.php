@@ -51,9 +51,7 @@ class TvDashboard extends Component
             dashboard: $this->dashboard,
             token: $this->token,
         );
-
         $this->loadDashboard();
-
         $this->dispatch('tv-dashboard-updated');
     }
 
