@@ -42,7 +42,7 @@
                     </p>
 
                     <p class="mt-2 text-lg text-slate-400">
-                        {{ $slide['performer']['team'] ?: 'Equipo general' }}
+                        {{ $slide['performer']['team'] ?: 'General team' }}
                     </p>
 
                     <p

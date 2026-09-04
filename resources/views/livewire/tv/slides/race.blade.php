@@ -304,7 +304,7 @@
                                     </p>
 
                                     <p class="race-person-team">
-                                        {{ $runner['team'] ?: 'Equipo general' }}
+                                        {{ $runner['team'] ?: 'Sales team' }}
                                     </p>
 
                                     <p class="race-person-money">

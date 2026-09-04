@@ -345,6 +345,7 @@ document.addEventListener('alpine:init', () => {
                 new Intl.DateTimeFormat(
                     'en-US',
                     {
+                        timeZone: 'America/Chicago',
                         hour: 'numeric',
                         minute: '2-digit',
                         second: '2-digit',
@@ -353,8 +354,9 @@ document.addEventListener('alpine:init', () => {
 
             this.date =
                 new Intl.DateTimeFormat(
-                    'es-US',
+                    'en-US',
                     {
+                        timeZone: 'America/Chicago',
                         weekday: 'long',
                         month: 'long',
                         day: 'numeric',
