@@ -7,15 +7,15 @@
 
     <meta name="robots" content="noindex, nofollow">
 
-    <meta property="og:title" content="Sales Dashboard" />
+    <meta property="og:title" content="Hugo Plumbing" />
     <meta property="og:description" content="Hugo Plumbing Sales Dashboard" />
-    <meta property="og:url" content=https://crm.hugoplumbingtx.com />
+    <meta property="og:url" content="https://crm.hugoplumbingtx.com/tv/race/dashboard" />
     <meta property="og:image" content="{{asset('assets/img/dashboard.jpg')}}" />
     <meta property="og:type" content="" />
-    <meta property="og:site_name" content=Hugo Plumbing Dashboard/>
+    <meta property="og:site_name" content="Hugo Plumbing Dashboard"/>
     <meta name="twitter:card" content="" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content="Dashboard" />
+    <meta name="twitter:description" content="Sales Dashboard" />
     <meta name="twitter:image" content="{{asset('assets/img/dashboard.jpg')}}" />
     <title>
         {{ $title ?? 'Sales TV Dashboard' }}
