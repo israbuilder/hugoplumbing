@@ -13,7 +13,7 @@
 
     <meta property="og:image" content="{{ asset('assets/img/dashboard.jpg') }}" />
     <meta property="og:image:secure_url" content="{{ asset('assets/img/dashboard.jpg') }}" />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:type" content="image/jpg" />
     <meta property="og:image:width" content="1024" />
     <meta property="og:image:height" content="576" />
 
