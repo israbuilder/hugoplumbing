@@ -1,6 +1,7 @@
 <div
     class="tv-slide tv-slide-enter grid place-items-center px-10 py-8"
 >
+
     @if($slide['announcement'])
         <div
             class="tv-glass grid w-full max-w-6xl grid-cols-12 overflow-hidden rounded-[2.5rem]"
@@ -25,7 +26,7 @@
                     <span
                         class="text-sm font-black uppercase tracking-[0.3em] text-sky-300"
                     >
-                        Anuncio
+                        Announcement
                     </span>
 
                     <h1
@@ -43,7 +44,7 @@
         </div>
     @else
         @include('livewire.tv.slides.partials.empty', [
-            'message' => 'No hay anuncios activos.',
+            'message' => 'No active announcement.',
         ])
     @endif
 </div>

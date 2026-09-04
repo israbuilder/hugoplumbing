@@ -73,7 +73,7 @@
                 </span>
 
                 <span class="text-xs font-black uppercase tracking-[0.3em] text-yellow-300">
-                    Competencia en vivo
+                   Live competition
                 </span>
 
             </div>
@@ -101,7 +101,7 @@
 
                 <div>
                     <p class="race-goal-label">
-                        Meta
+                        Goal
                     </p>
 
                     <p class="race-goal-value">
@@ -374,7 +374,7 @@
                                     @if($runner['goal_reached'])
 
                                         <div class="race-goal-celebration-label">
-                                            🏁 ¡META!
+                                            🏁 ¡GOAL!
                                         </div>
 
                                     @endif
@@ -491,7 +491,7 @@
     @else
 
         @include('livewire.tv.slides.partials.empty', [
-            'message' => 'No hay vendedores asignados a esta meta.',
+            'message' => 'No salesman assigned to this goal.',
         ])
 
     @endif

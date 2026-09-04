@@ -47,5 +47,6 @@ Route::middleware(['auth'])->prefix('integrations/meta')->name('integrations.met
 
 Route::get('/tv/{dashboard:slug}/{token}',TvDashboard::class)->name('tv.dashboard');
 
-
-
+Route::get('/', function () {
+    return redirect('/tv/race/dashboard');
+});

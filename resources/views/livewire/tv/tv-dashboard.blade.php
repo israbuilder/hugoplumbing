@@ -149,11 +149,11 @@
                     </div>
 
                     <h2 class="mt-6 text-3xl font-black uppercase italic text-white">
-                        No hay slides activos
+                       No active slides
                     </h2>
 
                     <p class="mt-3 text-zinc-400">
-                        Crea y activa slides desde Filament.
+                       create and activate from the backend.
                     </p>
 
                 </div>
@@ -188,7 +188,7 @@
             </div>
 
             <span class="hidden text-sm font-semibold text-zinc-400 sm:inline">
-                Actualizado:
+                Updated:
 
                 <strong class="ml-1 text-white">
                     {{ $lastUpdatedAt }}
@@ -222,7 +222,7 @@
             >
                 ←
                 <span class="hidden xl:inline">
-                    Anterior
+                    Previous
                 </span>
             </button>
 
@@ -232,7 +232,7 @@
                 class="tv-control-button tv-control-button-primary"
             >
                 <span
-                    x-text="isPaused ? 'Reanudar' : 'Pausar'"
+                    x-text="isPaused ? 'Play' : 'Pause'"
                 ></span>
             </button>
 
@@ -242,7 +242,7 @@
                 class="tv-control-button"
             >
                 <span class="hidden xl:inline">
-                    Siguiente
+                    Next
                 </span>
                 →
             </button>

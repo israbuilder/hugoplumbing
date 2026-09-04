@@ -28,29 +28,22 @@ class TvDashboard extends Component
 
     public string $lastUpdatedAt = '';
 
-    public function mount(
-        Dashboard $dashboard,
-        string $token
-    ): void {
-        $this->validateDashboardAccess(
-            dashboard: $dashboard,
-            token: $token,
-        );
+    public function mount( Dashboard $dashboard, string $token ): void 
+    {
+        $this->validateDashboardAccess(dashboard: $dashboard, token: $token,);
 
         $this->dashboard = $dashboard;
         $this->token = $token;
 
         $this->loadDashboard();
+        //dd(  $this->slides);
+
     }
 
     public function refreshDashboard(): void
     {
         $this->dashboard->refresh();
-
-        $this->validateDashboardAccess(
-            dashboard: $this->dashboard,
-            token: $this->token,
-        );
+        $this->validateDashboardAccess(dashboard: $this->dashboard, token: $this->token);
         $this->loadDashboard();
         $this->dispatch('tv-dashboard-updated');
     }
@@ -63,23 +56,19 @@ class TvDashboard extends Component
      * Puedes agregar/quitar tipos aquí dependiendo
      * de cuáles quieras paginar.
      */
-    $splittableTypes = [
-        DashboardSlideType::Race->value,
-        DashboardSlideType::Leaderboard->value,
-    ];
+    $splittableTypes = [DashboardSlideType::Race->value,  DashboardSlideType::Leaderboard->value,];
 
     if (! in_array($slide['type'], $splittableTypes, true)) {
         return [$slide];
     }
 
-    $leaderboard = collect(
-        $slide['leaderboard'] ?? []
-    );
+    $leaderboard = collect( $slide['leaderboard'] ?? [] );
 
     if ($leaderboard->isEmpty()) {
         return [$slide];
     }
 
+    
     /*
      * Máximo de vendedores por pantalla.
      *
@@ -89,13 +78,7 @@ class TvDashboard extends Component
      *     "vendors_per_slide": 3
      * }
      */
-    $perSlide = max(
-        1,
-        (int) (
-            $slide['settings']['vendors_per_slide']
-            ?? 3
-        )
-    );
+    $perSlide = max( 1, (int) ( $slide['settings']['vendors_per_slide'] ?? 3 ));
 
     /*
      * Si solamente hay 3 o menos,
@@ -105,9 +88,7 @@ class TvDashboard extends Component
         return [$slide];
     }
 
-    $chunks = $leaderboard
-        ->chunk($perSlide)
-        ->values();
+    $chunks = $leaderboard->chunk($perSlide)->values();
 
     $totalPages = $chunks->count();
 
@@ -179,7 +160,6 @@ class TvDashboard extends Component
             })
             ->values()
             ->all();
-
         $this->lastUpdatedAt = now(
             $this->dashboard->timezone
         )->format('g:i:s A');
@@ -489,8 +469,9 @@ class TvDashboard extends Component
 
     private function announcementData(): array
     {
+
         $announcement = Announcement::query()
-            ->active()
+            // ->active()
             ->where(function (Builder $query): void {
                 $query
                     ->whereNull('dashboard_id')
